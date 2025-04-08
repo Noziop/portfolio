@@ -1,0 +1,41 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+    -   id: check-yaml
+    -   id: check-added-large-files
+    -   id: check-json
+
+# Pour le frontend Vue.js
+-   repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v9.24.0  # Mettre à jour vers la même version que dans ton package.json
+    hooks:
+    -   id: eslint
+        files: \.(js|vue)$
+        args:
+        - --config=frontend/eslint.config.js
+        additional_dependencies:
+        -   eslint@9.24.0
+        -   eslint-plugin-vue@10.0.0
+        -   "@eslint/js@9.24.0"
+        -   globals@16.0.0
+
+
+
+# Pour le backend Python
+-   repo: https://github.com/pycqa/flake8
+    rev: 6.0.0
+    hooks:
+    -   id: flake8
+
+-   repo: https://github.com/psf/black
+    rev: 23.3.0
+    hooks:
+    -   id: black
+
+-   repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+    -   id: isort
