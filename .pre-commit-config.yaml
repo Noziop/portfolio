@@ -62,10 +62,10 @@ repos:
         always_run: true
         verbose: true
 
-    # Frontend (Vue.js) badges
-    -   id: frontend-lint-report
-        name: Generate frontend lint report
-        entry: bash -c 'cd frontend && npm run lint:report'
+    # Frontend (Vue.js) reports
+    -   id: frontend-lint-badge
+        name: Generate ESLint badge
+        entry: bash -c 'cd frontend && npm run lint:badge'
         language: system
         pass_filenames: false
         always_run: true
