@@ -63,9 +63,18 @@ repos:
         verbose: true
 
     # Frontend (Vue.js) reports
-    -   id: frontend-lint-badge
-        name: Generate ESLint badge
-        entry: bash -c 'cd frontend && npm run lint:badge'
+    -   id: frontend-lint-report
+        name: Generate frontend lint report
+        entry: bash -c 'cd frontend && npm run lint:report'
+        language: system
+        pass_filenames: false
+        always_run: true
+        verbose: true
+
+    # Génération du badge ESLint
+    -   id: eslint-badge
+        name: Generate ESLint badge from report
+        entry: bash -c 'poetry run python scripts/eslint_badge_generator.py reports/eslint/eslint-report.json badges/eslint-badge.svg'
         language: system
         pass_filenames: false
         always_run: true
