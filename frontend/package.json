@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "lint:report": "eslint --output-file ../reports/eslint/eslint-report.json --format json .",
-    "lint:badge": "eslint . --format ./node_modules/eslint-formatter-badger/src/index.js --output-file ../badges/eslint-badge.svg"
+    "lint:badge": "eslint . -f badger -o ../badges/eslint-badge.svg"
   },
   "dependencies": {
     "vue": "^3.5.13",
