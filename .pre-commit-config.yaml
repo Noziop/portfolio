@@ -39,3 +39,42 @@ repos:
     rev: 5.12.0
     hooks:
     -   id: isort
+
+# Badges generator for README.md
+# Hooks locaux pour les badges
+-   repo: local
+    hooks:
+    # Backend (Python) badges
+    -   id: pytest-coverage
+        name: Run backend tests with coverage
+        entry: bash -c 'cd backend && poetry run pytest --cov=app --cov-report=xml:../reports/coverage/backend-coverage.xml'
+        language: system
+        pass_filenames: false
+        always_run: true
+        verbose: true
+
+    -   id: flake8-report
+        name: Generate backend flake8 report
+        entry: bash -c 'cd backend && poetry run flake8 --statistics --tee --output-file=../reports/flake8/flake8stats.txt app/'
+        language: system
+        pass_filenames: false
+        always_run: true
+        verbose: true
+
+    # Frontend (Vue.js) badges
+    -   id: frontend-lint-report
+        name: Generate frontend lint report
+        entry: bash -c 'cd frontend && npm run lint:report'
+        language: system
+        pass_filenames: false
+        always_run: true
+        verbose: true
+
+    # Generate all badges
+    -   id: generate-badges
+        name: Generate quality badges
+        entry: bash -c 'mkdir -p badges && poetry run genbadge coverage -i reports/coverage/backend-coverage.xml -o badges/backend-coverage-badge.svg && poetry run genbadge flake8 -i reports/flake8/flake8stats.txt -o badges/flake8-badge.svg'
+        language: system
+        pass_filenames: false
+        always_run: true
+        verbose: true

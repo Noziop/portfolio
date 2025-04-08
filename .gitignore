@@ -5,3 +5,10 @@ __pycache__/
 *.pyd
 node_modules/
 *.log
+
+# Test coverage
+.coverage
+reports/
+
+# Exclude badges from gitignore so they're committed
+!badges/
