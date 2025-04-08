@@ -8,9 +8,9 @@ repos:
     -   id: check-added-large-files
     -   id: check-json
 
-# Pour le frontend Vue.js
+# frontend Vue.js
 -   repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v9.24.0  # Mettre à jour vers la même version que dans ton package.json
+    rev: v9.24.0
     hooks:
     -   id: eslint
         files: \.(js|vue)$
@@ -24,7 +24,7 @@ repos:
 
 
 
-# Pour le backend Python
+# backend FastAPI - Python
 -   repo: https://github.com/pycqa/flake8
     rev: 6.0.0
     hooks:

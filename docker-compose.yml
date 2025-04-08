@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-  # Frontend Vue.js
   frontend:
     build: ./frontend
     container_name: portfolio-frontend
@@ -22,7 +21,9 @@ services:
     networks:
       portfolio-network:
         ipv4_address: 172.20.0.10
-    # Script qui copie les logs Docker vers le volume partagé
+    # Script copying logs to the shared volume
+    # This script runs nginx and then copies the logs every 5 minutes
+    # to the shared volume
     command: >
       sh -c "nginx && while true; do
              cat /var/log/nginx/access.log > /logs/frontend_access.log;
@@ -71,7 +72,9 @@ services:
     restart: unless-stopped
     networks:
       - portfolio-network
-    # Script qui copie les logs MariaDB vers le volume partagé
+    # Script copying logs to the shared volume
+    # This script runs mysqld and then copies the logs every 5 minutes
+    # to the shared volume
     command: >
       sh -c "mysqld && while true; do
              cat /var/log/mysql/error.log > /logs/db_error.log;
@@ -88,4 +91,4 @@ networks:
 
 volumes:
   mariadb_data:
-  logs_volume:  # Volume partagé pour tous les logs
+  logs_volume:  # shared volume for logs
