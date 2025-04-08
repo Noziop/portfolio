@@ -12,3 +12,7 @@ reports/
 
 # Exclude badges from gitignore so they're committed
 !badges/
+
+
+#IDE Specific
+.vscode/
