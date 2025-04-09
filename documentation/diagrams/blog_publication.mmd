@@ -1,0 +1,20 @@
+sequenceDiagram
+    actor A as Admin
+    participant F as Frontend Admin
+    participant API as API FastAPI
+    participant DB as MariaDB
+    participant R as Redis Cache
+
+    A->>F: Accède à "Nouveau Post"
+    F->>API: GET /auth/verify (avec JWT)
+    API->>API: Vérifie JWT
+    API->>F: JWT valide
+    F->>A: Affiche éditeur blog
+    A->>F: Rédige article & soumet
+    F->>API: POST /blog/posts (avec JWT)
+    API->>API: Vérifie JWT
+    API->>DB: Insère nouvel article
+    DB->>API: Confirmation insertion
+    API->>R: Invalide cache blog
+    API->>F: Confirmation publication
+    F->>A: Affiche confirmation succès

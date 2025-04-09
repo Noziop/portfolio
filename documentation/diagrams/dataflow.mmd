@@ -1,0 +1,48 @@
+flowchart TD
+    %% Entités externes
+    E1[Visiteur Professionnel]
+    E2[Visiteur Interface Secrète]
+    E3[Admin]
+
+    %% Processus principaux
+    P1((API\nAuthentification))
+    P2((API\nPortfolio Pro))
+    P3((API\nPortfolio Secret))
+    P4((API\nBlog))
+    P5((API\nContact))
+    P6((API\nAnalytics))
+    P7((Interface Admin))
+
+    %% Stockage de données
+    D1[(Base de données\nMariaDB)]
+    D2[(Cache\nRedis)]
+
+    %% Flux de données - Visiteur professionnel
+    E1 -->|Consulte| P2
+    P2 -->|Récupère projets\nskills, expériences| D1
+    P2 -->|Cache données\nfréquemment consultées| D2
+    D2 -->|Données en cache| P2
+    E1 -->|Lit articles| P4
+    P4 -->|Récupère articles| D1
+    E1 -->|Envoie message| P5
+    P5 -->|Stocke demande| D1
+
+    %% Flux spécial - Accès interface secrète
+    E1 -->|CTRL+ALT+U+J\n+ hash SHA-3-512| P1
+    P1 -->|Vérifie hash| D1
+    P1 -->|Redirection HTTPS| E2
+
+    %% Flux de données - Visiteur interface secrète
+    E2 -->|Consulte| P3
+    P3 -->|Récupère projets créatifs\net contenu personnel| D1
+    P3 -->|Cache données| D2
+    D2 -->|Données en cache| P3
+    E2 -->|Lit articles alternatifs| P4
+
+    %% Flux de données - Admin
+    E3 -->|Authentification| P1
+    P1 -->|Vérifie identifiants| D1
+    P1 -->|Accès autorisé| P7
+    P7 -->|Gère tout le contenu| D1
+    P7 -->|Consulte statistiques| P6
+    P6 -->|Récupère données\nd'utilisation| D1

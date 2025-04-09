@@ -1,0 +1,58 @@
+flowchart TD
+    %% Définition des acteurs
+    Admin["Admin"]
+    ProVisitor["Visiteur / Professionnel"]
+    SecretVisitor["Visiteur\nInterface Secrète"]
+
+    %% Systèmes
+    subgraph PortfolioPro["Interface Professionnelle"]
+        UC1[Consulter projets professionnels]
+        UC2[Voir compétences techniques]
+        UC3[Explorer parcours professionnel]
+        UC4[Lire articles techniques]
+        UC5[Contacter par formulaire]
+    end
+
+    subgraph PortfolioSecret["Interface Secrète Cyberpunk"]
+        UC6[Accéder par combo clavier spécial]
+        UC7[Voir projets créatifs]
+        UC8[Découvrir contenu personnel]
+        UC9[Lire articles alternatifs]
+    end
+
+    subgraph AdminPanel["Panneau d'Administration"]
+        UC10[Gérer contenu professionnel]
+        UC11[Gérer contenu cyberpunk]
+        UC12[Consulter métriques/analytics]
+        UC13[Gérer paramètres de sécurité]
+        UC14[Répondre aux messages]
+        UC15[Gérer blog]
+    end
+
+    %% Relations visiteur professionnel
+    ProVisitor --> UC1
+    ProVisitor --> UC2
+    ProVisitor --> UC3
+    ProVisitor --> UC4
+    ProVisitor --> UC5
+
+    %% Relations visiteur interface secrète
+    ProVisitor --> UC6
+    SecretVisitor --> UC7
+    SecretVisitor --> UC8
+    SecretVisitor --> UC9
+
+    %% Relation spéciale: transformation
+    UC6 --> SecretVisitor
+
+    %% Relations admin
+    Admin --> UC10
+    Admin --> UC11
+    Admin --> UC12
+    Admin --> UC13
+    Admin --> UC14
+    Admin --> UC15
+
+    %% Relations admin avec interfaces
+    Admin --> PortfolioPro
+    Admin --> PortfolioSecret

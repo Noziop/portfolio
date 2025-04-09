@@ -1,0 +1,18 @@
+sequenceDiagram
+    actor A as Admin
+    participant F as Frontend
+    participant API as API FastAPI
+    participant DB as MariaDB
+    participant R as Redis Cache
+
+    A->>F: Accède à la page de connexion
+    F->>A: Affiche formulaire login
+    A->>F: Saisit identifiants
+    F->>API: POST /auth/login
+    API->>DB: Vérifie identifiants
+    DB->>API: Confirme identifiants valides
+    API->>API: Génère JWT + refresh token
+    API->>DB: Stocke refresh token
+    API->>F: Retourne JWT
+    F->>R: Stocke JWT en localStorage
+    F->>A: Redirige vers dashboard admin

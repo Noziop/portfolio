@@ -1,0 +1,86 @@
+erDiagram
+    %% 1. Module Sécurité et Conformité
+    users ||--o{ refresh_tokens : has
+    users ||--o{ access_logs : generates
+
+    secret_interface_settings ||--o{ secret_hash_attempts : monitors
+
+    cookie_categories ||--o{ user_cookie_preferences : defines
+    users ||--o{ data_access_requests : submits
+
+    %% 2. Contenu Portfolio
+    users ||--o{ skills : manages
+    users ||--o{ projects : creates
+    users ||--o{ experiences : records
+    users ||--o{ education : lists
+    users ||--o{ certifications : obtains
+
+    %% 3. Contenu Interface Cyberpunk
+    users ||--o{ creative_projects : showcases
+    users ||--o{ personal_content : shares
+
+    %% 4. Module Blog
+    users ||--o{ blog_posts : authors
+    blog_posts }o--o{ post_categories : belongs_to
+    blog_posts }o--o{ tags : has
+
+    %% 5. Interactions Utilisateur
+    contact_requests ||--o{ users : contacts
+    users ||--o{ social_links : manages
+
+    %% 6. Analytics
+    page_views }o--|| users : visits
+    visitor_stats }o--|| users : analyzes
+    user_interactions }o--|| users : tracks
+
+    %% 7. Configuration Système
+    site_settings ||--|| users : configures
+    media_files }o--|| users : uploads
+
+    %% Définitions des entités avec attributs clés
+    users {
+        int id PK
+        string username
+        string email
+        string password_hash
+        boolean is_admin
+        datetime created_at
+    }
+
+    projects {
+        int id PK
+        string title
+        string description
+        string technologies
+        string image_url
+        boolean visible_in_professional
+        boolean visible_in_cyberpunk
+    }
+
+    skills {
+        int id PK
+        string name
+        string category
+        int level
+        boolean visible_in_professional
+        boolean visible_in_cyberpunk
+    }
+
+    blog_posts {
+        int id PK
+        string title
+        string slug
+        text content
+        datetime published_at
+        string status
+        boolean visible_in_professional
+        boolean visible_in_cyberpunk
+    }
+
+    secret_interface_settings {
+        int id PK
+        string hash_secret
+        int allowed_attempts
+        int timeout_duration
+        boolean is_enabled
+    }

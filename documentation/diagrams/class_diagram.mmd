@@ -1,0 +1,134 @@
+classDiagram
+    %% Structure principale Backend
+    class Application {
+        +initialize()
+        +configure_routes()
+        +start_server()
+    }
+
+    %% Modèles de données (tables)
+    class BaseModel {
+        +id: int
+        +created_at: datetime
+        +updated_at: datetime
+    }
+
+    class User {
+        +username: str
+        +email: str
+        +password_hash: str
+        +is_admin: bool
+        +authenticate()
+        +create_refresh_token()
+    }
+
+    class Project {
+        +title: str
+        +description: str
+        +technologies: List[str]
+        +image_url: str
+        +github_url: str
+        +demo_url: str
+        +visible_in_professional: bool
+        +visible_in_cyberpunk: bool
+    }
+
+    class Skill {
+        +name: str
+        +category: str
+        +level: int
+        +visible_in_professional: bool
+        +visible_in_cyberpunk: bool
+    }
+
+    class BlogPost {
+        +title: str
+        +slug: str
+        +content: str
+        +published_at: datetime
+        +status: str
+        +visible_in_professional: bool
+        +visible_in_cyberpunk: bool
+    }
+
+    class SecretInterfaceSettings {
+        +hash_secret: str
+        +allowed_attempts: int
+        +timeout_duration: int
+        +is_enabled: bool
+        +verify_access(hash: str, ip: str): bool
+    }
+
+    %% Services métier
+    class AuthService {
+        +login(username: str, password: str)
+        +verify_token(token: str)
+        +refresh_token(refresh_token: str)
+        +verify_secret_access(hash: str, ip: str)
+    }
+
+    class ContentService {
+        +get_professional_content()
+        +get_cyberpunk_content()
+        +filter_visible_content(interface: str)
+    }
+
+    class AnalyticsService {
+        +track_page_view(page: str, ip: str)
+        +get_visitor_stats()
+    }
+
+    %% Controllers API
+    class AuthController {
+        +login()
+        +refresh()
+        +verify_secret()
+    }
+
+    class ContentController {
+        +get_projects()
+        +get_skills()
+        +get_blog_posts()
+    }
+
+    class AdminController {
+        +update_content()
+        +manage_settings()
+        +view_analytics()
+    }
+
+    %% Middlewares
+    class JWTMiddleware {
+        +process_request()
+        +verify_admin()
+    }
+
+    class RateLimitMiddleware {
+        +process_request()
+        +check_limits()
+    }
+
+    %% Relations
+    BaseModel <|-- User
+    BaseModel <|-- Project
+    BaseModel <|-- Skill
+    BaseModel <|-- BlogPost
+    BaseModel <|-- SecretInterfaceSettings
+
+    Application --> AuthController
+    Application --> ContentController
+    Application --> AdminController
+
+    AuthController --> AuthService
+    ContentController --> ContentService
+    AdminController --> ContentService
+    AdminController --> AnalyticsService
+
+    AuthService --> User
+    AuthService --> SecretInterfaceSettings
+    ContentService --> Project
+    ContentService --> Skill
+    ContentService --> BlogPost
+
+    AuthController ..> JWTMiddleware
+    AuthController ..> RateLimitMiddleware
