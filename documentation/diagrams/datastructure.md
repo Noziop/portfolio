@@ -1,0 +1,55 @@
+graph TD
+    DB[portfolio_db] --> SEC[1. Sécurité et Conformité]
+    DB --> PROF[2. Contenu Portfolio Professionnel]
+    DB --> CYBER[3. Contenu Interface Cyberpunk]
+    DB --> BLOG[4. Blog]
+    DB --> INTER[5. Interactions Utilisateur]
+    DB --> ANALY[6. Analytics]
+    DB --> SYS[7. Configuration Système]
+
+    %% Sécurité et Conformité
+    SEC --> AUTH[Authentification]
+    SEC --> SECRET[Interface Secrète]
+    SEC --> RGPD[RGPD]
+
+    AUTH --> users[users]
+    AUTH --> refresh_tokens[refresh_tokens]
+    AUTH --> access_logs[access_logs]
+
+    SECRET --> secret_settings[secret_interface_settings]
+    SECRET --> hash_attempts[secret_hash_attempts]
+
+    RGPD --> consent_logs[consent_logs]
+    RGPD --> data_requests[data_access_requests]
+    RGPD --> cookie_cat[cookie_categories]
+    RGPD --> cookie_prefs[user_cookie_preferences]
+
+    %% Contenu Portfolio Professionnel
+    PROF --> skills[skills]
+    PROF --> projects[projects]
+    PROF --> experiences[experiences]
+    PROF --> education[education]
+    PROF --> certifications[certifications]
+
+    %% Contenu Interface Cyberpunk
+    CYBER --> creative[creative_projects]
+    CYBER --> personal[personal_content]
+
+    %% Blog
+    BLOG --> posts[blog_posts]
+    BLOG --> categories[post_categories]
+    BLOG --> tags[tags]
+    BLOG --> relationships[post_relationships]
+
+    %% Interactions Utilisateur
+    INTER --> contact[contact_requests]
+    INTER --> social[social_links]
+
+    %% Analytics
+    ANALY --> views[page_views]
+    ANALY --> stats[visitor_stats]
+    ANALY --> interactions[user_interactions]
+
+    %% Configuration Système
+    SYS --> settings[site_settings]
+    SYS --> media[media_files]
