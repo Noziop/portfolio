@@ -6,6 +6,7 @@ __pycache__/
 node_modules/
 *.log
 @eaDir/
+backup/
 
 # Test coverage
 .coverage

@@ -7,7 +7,10 @@ repos:
         exclude: \.svg$
     -   id: check-yaml
     -   id: check-added-large-files
+        args: ['--maxkb=30000']  # <-- 30 Mo, à ajuster selon tes besoins
     -   id: check-json
+        exclude: frontend/A Neat Dev Portfolio/public/fonts/helvetiker_bold.typeface.json
+
 
 # frontend Vue.js
 -   repo: https://github.com/pre-commit/mirrors-eslint
@@ -16,7 +19,7 @@ repos:
     -   id: eslint
         files: \.(js|vue)$
         args:
-        - --config=frontend/eslint.config.js
+            - --config=frontend/A Neat Dev Portfolio/eslint.config.js
         additional_dependencies:
         -   eslint@9.24.0
         -   eslint-plugin-vue@10.0.0
@@ -65,7 +68,7 @@ repos:
     # Frontend (Vue.js) reports
     -   id: frontend-lint-report
         name: Generate frontend lint report
-        entry: bash -c 'cd frontend && npm run lint:report'
+        entry: bash -c 'cd "frontend/A Neat Dev Portfolio/" && npm run lint:report'
         language: system
         pass_filenames: false
         always_run: true
