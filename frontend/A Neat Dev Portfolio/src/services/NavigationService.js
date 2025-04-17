@@ -1,8 +1,11 @@
 import * as CANNON from 'cannon-es';
 
 export class NavigationService {
-  constructor(spaceshipBody) {
-    this.spaceshipBody = spaceshipBody;
+  constructor(spaceship) {
+    // Stocker à la fois le vaisseau et son corps physique
+    this.spaceship = spaceship;
+    this.spaceshipBody = spaceship.getBody();
+
     this.keys = {
       // Déplacement
       forward: false,    // Flèche haut
@@ -79,7 +82,7 @@ export class NavigationService {
 
   update(delta) {
     // Forces de base
-    const baseForce = 60;
+    const baseForce = 150;
     const boostMultiplier = this.keys.boost ? 6 : 1;
     const force = new CANNON.Vec3();
 
@@ -155,6 +158,20 @@ export class NavigationService {
 
     // Réinitialiser la vitesse angulaire pour éviter toute rotation résiduelle
     this.spaceshipBody.angularVelocity.set(0, 0, 0);
+
+    // CORRECTION: Contrôle des propulseurs basé sur les touches
+    if (this.keys.forward) {
+      // Allumer les moteurs avec une intensité basée sur le boost
+      const intensity = this.keys.boost ? 5.0 : 2.0;
+      if (this.spaceship && typeof this.spaceship.setEngineLight === 'function') {
+        this.spaceship.setEngineLight(intensity);
+      }
+    } else {
+      // Éteindre les moteurs si on n'accélère pas
+      if (this.spaceship && typeof this.spaceship.setEngineLight === 'function') {
+        this.spaceship.setEngineLight(0);
+      }
+    }
   }
 
   destroy() {

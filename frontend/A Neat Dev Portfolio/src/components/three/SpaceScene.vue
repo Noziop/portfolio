@@ -7,156 +7,144 @@
 <script>
 import { onMounted, ref, onBeforeUnmount } from 'vue';
 import * as THREE from 'three';
-import * as CANNON from 'cannon-es';
 import { initThree } from '@/plugins/three';
-import { createStarField } from './StarField';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { createStarField, updateStarField, destroyStarField } from './StarField';
 import { NavigationService } from '@/services/NavigationService';
-import { RingSystem } from './RingSystem';
+import { PhysicsWorld } from '@/services/PhysicsService';
+import { Spaceship } from './Spaceship';
+import { UIController } from '@/components/ui/UIController';
+import { UniverseController } from '@/controllers/UniverseController';
+import { CameraController } from '@/controllers/CameraController';
+import { UniverseConfig } from '@/config/universe.config';
 
 export default {
   name: 'SpaceScene',
   setup() {
     const canvas = ref(null);
-    let scene, camera, renderer, stars, spaceship, spaceshipBody, engineLight, clock, physicsWorld, navigationService;
+
+    // Services et contrôleurs
+    let scene, camera, renderer;
+    let physicsWorld, navigationService, cameraController;
+    let uiController, universeController;
+    let spaceship, stars, clock;
     let animationFrameId;
-    let ringSystem;
 
-    // Augmenter le décalage Y de la caméra pour une vue plus élevée
-    const cameraOffset = new THREE.Vector3(0, 5, -15);
-    const cameraLerpFactor = 0.1;
+    // Handler d'événements pour les manœuvres intensives
+    const handleKeyDown = (event) => {
+      if ((event.code === 'ControlLeft' || event.code === 'ControlRight' ||
+           event.code === 'ShiftLeft' || event.code === 'ShiftRight' ||
+           event.code === 'ArrowDown') && cameraController) {
 
-    onMounted(() => {
+        cameraController.notifyIntensiveManeuver();
+      }
+    };
+
+    onMounted(async () => {
+      // Initialiser Three.js
       ({ scene, camera, renderer } = initThree(canvas.value));
       clock = new THREE.Clock();
 
-      // Initialisation physique
-      physicsWorld = new CANNON.World();
-      physicsWorld.gravity.set(0, 0, 0);
-      physicsWorld.solver.iterations = 10;
+      // Initialiser services et contrôleurs
+      uiController = new UIController();
+      physicsWorld = new PhysicsWorld();
+      cameraController = new CameraController(camera);
 
-      // Étoiles
+      // Ajouter étoiles
       stars = createStarField(scene);
 
-      // Éclairage
-      scene.add(new THREE.AmbientLight(0x404040, 0.6));
-      const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
-      dirLight.position.set(5, 10, 7);
-      scene.add(dirLight);
+      // Configurer éclairage
+      setupLighting(scene);
 
-      engineLight = new THREE.PointLight(0x00aaff, 0, 50);
-      scene.add(engineLight);
+      // Initialiser l'univers
+      universeController = new UniverseController(scene, camera, physicsWorld);
+      await universeController.initialize(uiController);
 
-      // Chargement modèle vaisseau
-      const loader = new GLTFLoader();
-      loader.load(
-        '/src/assets/models/spaceship.glb',
-        (gltf) => {
-          spaceship = gltf.scene;
-          spaceship.scale.set(0.1, 0.1, 0.1);
+      // Créer le vaisseau et configurer la navigation
+      spaceship = new Spaceship(scene, physicsWorld);
+      spaceship.onReady(() => {
+        navigationService = new NavigationService(spaceship);
+        cameraController.setTarget(spaceship); // Définir le vaisseau comme cible de la caméra
+      });
 
-          // Corps physique du vaisseau (position basse)
-          spaceshipBody = new CANNON.Body({
-            mass: 1,
-            shape: new CANNON.Box(new CANNON.Vec3(1, 0.5, 2)),
-            position: new CANNON.Vec3(0, -2, 0)
-          });
-
-          physicsWorld.addBody(spaceshipBody);
-          spaceship.position.copy(spaceshipBody.position);
-          spaceship.quaternion.copy(spaceshipBody.quaternion);
-
-          engineLight.position.set(0, 0, -1.5);
-          spaceship.add(engineLight);
-          scene.add(spaceship);
-
-          navigationService = new NavigationService(spaceshipBody);
-
-          // Initialisation des anneaux APRÈS le chargement du vaisseau
-          ringSystem = new RingSystem(scene, {
-            particlesCount: 600,
-            particleSize: 0.3,
-          });
-
-          // Création des anneaux (positionnés bas également)
-          const ring1 = ringSystem.addRing(
-            new THREE.Vector3(-50, 0, 125),
-            {
-              color: 0xff00cc, // Magenta
-              onCollide: () => console.log("Portfolio direct")
-            }
-          );
-
-          const ring2 = ringSystem.addRing(
-            new THREE.Vector3(50, 0, 125),
-            {
-              color: 0x00ffcc, // Cyan
-              onCollide: () => console.log("Mode jeu")
-            }
-          );
-
-          // Ajout des textes aux anneaux
-          ringSystem.addTextToRing(ring1, "To Portfolio", "AND BEYOND!");
-          ringSystem.addTextToRing(ring2, "MEH!!!", "HERE TO PLAY, BABY!");
-
-        },
-        undefined,
-        (error) => console.error('Erreur chargement modèle :', error)
-      );
-
+      // Ajouter les écouteurs d'événements
       window.addEventListener('resize', handleResize);
+      window.addEventListener('keydown', handleKeyDown);
 
-      const animate = () => {
-        animationFrameId = requestAnimationFrame(animate);
-        const delta = clock.getDelta();
-
-        // Mise à jour physique
-        physicsWorld.step(1 / 60);
-
-        // Mise à jour contrôles
-        if (navigationService) navigationService.update(delta);
-
-        // Synchronisation modèle vaisseau
-        if (spaceship && spaceshipBody) {
-          spaceship.position.copy(spaceshipBody.position);
-          spaceship.quaternion.copy(spaceshipBody.quaternion);
-        }
-
-        // Gestion caméra modifiée
-        if (spaceshipBody) {
-          const shipPosition = new THREE.Vector3().copy(spaceshipBody.position);
-          camera.position.lerp(shipPosition.clone().add(cameraOffset), cameraLerpFactor * delta * 60);
-
-          // Créer un point de visée décalé vers le haut
-          const lookAtTarget = shipPosition.clone();
-          lookAtTarget.y += 5; // Déplace le point de visée vers le haut
-
-          // Faire regarder la caméra vers ce point décalé au lieu du vaisseau
-          camera.lookAt(lookAtTarget);
-        }
-
-        // Animation et collisions
-        if (ringSystem && spaceshipBody) {
-          ringSystem.animate();
-          ringSystem.checkCollisions(spaceshipBody.position);
-        }
-
-        renderer.render(scene, camera);
-      };
-
+      // Démarrer la boucle d'animation
       animate();
     });
 
+    // Configuration de l'éclairage
+    const setupLighting = (scene) => {
+      scene.add(new THREE.AmbientLight(0x404040, 0.8));
+      const dirLight = new THREE.DirectionalLight(0xffffff, 1.8);
+      dirLight.position.set(5, 10, 7);
+      scene.add(dirLight);
+    };
+
+    // Gestionnaire de redimensionnement
     const handleResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
+      if (!renderer) return;
       renderer.setSize(window.innerWidth, window.innerHeight);
+      if (cameraController) {
+        cameraController.handleResize();
+      }
+    };
+
+    // Boucle d'animation
+    const animate = () => {
+      animationFrameId = requestAnimationFrame(animate);
+      const delta = clock.getDelta();
+
+      // Mise à jour de tous les systèmes
+      physicsWorld.update(delta);
+
+      if (navigationService) {
+        navigationService.update(delta);
+      }
+
+      if (spaceship) {
+        spaceship.update();
+
+        // Vérifier si le vaisseau est dans les limites
+        const shipPosition = spaceship.getPosition();
+        if (shipPosition && universeController && universeController.checkBoundaries(shipPosition)) {
+          universeController.resetPlayerPosition(spaceship);
+        }
+      }
+
+      // Mise à jour de la caméra
+      if (cameraController) {
+        cameraController.update(delta);
+      }
+
+      // Mise à jour de l'univers
+      if (universeController) {
+        universeController.update(delta);
+      }
+
+      // Mise à jour des étoiles
+      updateStarField(stars);
+
+      // Rendu de la scène
+      renderer.render(scene, camera);
     };
 
     onBeforeUnmount(() => {
-      if (ringSystem) ringSystem.clearAll();
-      cancelAnimationFrame(animationFrameId);
-      window.removeEventListener('resize', handleResize);
+      try {
+        // Nettoyage des ressources
+        if (universeController) universeController.dispose();
+        if (stars && scene) destroyStarField(stars, scene);
+
+        cancelAnimationFrame(animationFrameId);
+        navigationService = null;
+
+        // Supprimer les écouteurs d'événements
+        window.removeEventListener('resize', handleResize);
+        window.removeEventListener('keydown', handleKeyDown);
+      } catch (error) {
+        console.warn('Error during component cleanup:', error);
+      }
     });
 
     return { canvas };

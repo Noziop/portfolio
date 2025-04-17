@@ -2,16 +2,17 @@ import * as THREE from 'three';
 
 export const createStarField = (scene) => {
   const starGeometry = new THREE.BufferGeometry();
-  const starCount = 1000000;
+  const starCount = 100000;
 
   const positions = [];
   const opacities = [];
   const sizes = [];
 
+  //map size
   for (let i = 0; i < starCount; i++) {
-    positions.push((Math.random() - 0.5) * 10000); // x
-    positions.push((Math.random() - 0.5) * 10000); // y
-    positions.push((Math.random() - 0.5) * 10000);
+    positions.push((Math.random() - 0.5) * 3000); // x
+    positions.push((Math.random() - 0.5) * 3000); // y
+    positions.push((Math.random() - 0.5) * 2000);
 
 
     opacities.push(Math.random());
