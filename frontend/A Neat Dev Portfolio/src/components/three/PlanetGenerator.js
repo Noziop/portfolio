@@ -110,7 +110,7 @@ export class PlanetGenerator {
       let size;
       switch (type) {
         case 'gasGiant':
-          size = 30 + Math.random() * 10; // Plus grandes
+          size = 60 + Math.random() * 10; // Plus grandes
           break;
         case 'binary':
           size = 25 + Math.random() * 8; // Systèmes binaires assez grands

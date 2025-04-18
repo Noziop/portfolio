@@ -1,8 +1,8 @@
 export const UniverseConfig = {
-  universeSize: 10000, //du centre de la scène jusqu'à la limite
+  universeSize: 5000, //du centre de la scène jusqu'à la limite
   boundaries: {
-    warning: 9800,
-    reset: 10000
+    warning: 4800,
+    reset: 5000
   },
 
   // Configuration de la physique
@@ -10,34 +10,45 @@ export const UniverseConfig = {
     gravitationalConstant: 0.5,
     maxGravityDistance: 100,
     collisionDamping: 0.4,
-    debugMode: false
+    debugMode: true
   },
 
   // Configuration de la caméra
   camera: {
-    offset: { x: 0, y: 5, z: -15 },
-    lerpFactor: 0.1,
-    mode: 'immediate',  // 'adaptive', 'smooth', or 'immediate'
+    offset: { x: 0, y: 5, z: -10 },
+    lerpFactor: 0.01,
+    mode: 'adaptive',  // 'adaptive', 'smooth', or 'immediate'
     fov: 75,
     near: 0.1,
-    far: 10000,
+    far: 9000,
+    dynamicOffset: {
+      enabled: false, // Si vrai, la caméra s'éloigne en fonction de la vitesse
+      speedFactor: 0.05,  // Plus cette valeur est élevée, plus la caméra s'éloigne avec la vitesse
+      maxDistance: 10     // Distance maximale d'éloignement supplémentaire
+    },
     shake: {
-      enabled: true,
+      enabled: false,
       intensityFactor: 1.0
     }
   },
 
+  //Starship
+  spaceship: {
+    baseForce: 90,
+    boostForce: 20,
+  },
+
   // Étoiles
   stars: {
-    count: 1000000,
-    size: {min: 0.5, max: 2.0}
+    count: 300000,
+    size: {min: 0.1, max: 5.0}
   },
 
   // Planètes
   planets: {
     count: 10,
     minDistance: 2000,
-    maxDistance: 1700,
+    maxDistance: 4700,
     minDistanceBetween: 1300 // Distance minimale entre les planètes
   },
 

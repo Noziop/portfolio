@@ -54,11 +54,32 @@ export class CameraController {
       speed = velocity ? velocity.length() : 0;
     }
 
-    // Transformer l'offset selon l'orientation
-    const transformedOffset = this.offset.clone().applyQuaternion(targetQuaternion);
-    const targetCameraPos = targetPosition.clone().add(transformedOffset);
+    // Position de base (sans effet dynamique)
+    const baseOffset = this.offset.clone();
+    const transformedBaseOffset = baseOffset.clone().applyQuaternion(targetQuaternion);
+    const baseCameraPos = targetPosition.clone().add(transformedBaseOffset);
 
-    // Appliquer différents modes de caméra
+    // Position avec effet dynamique (si activé)
+    let targetCameraPos = baseCameraPos.clone();
+    if (UniverseConfig.camera.dynamicOffset && UniverseConfig.camera.dynamicOffset.enabled) {
+      const speedFactor = UniverseConfig.camera.dynamicOffset.speedFactor;
+      const maxDistance = UniverseConfig.camera.dynamicOffset.maxDistance;
+
+      const extraDistance = Math.min(speed * speedFactor, maxDistance);
+
+      // Calculer un vecteur "recul" dans la direction du vaisseau
+      const shipDirection = new THREE.Vector3(0, 0, 1).applyQuaternion(targetQuaternion);
+      shipDirection.multiplyScalar(-extraDistance); // Direction opposée
+
+      // Appliquer le recul à la position cible
+      targetCameraPos.add(shipDirection);
+
+      if (speed > 10) {
+        console.log(`Vitesse: ${speed.toFixed(2)}, Éloignement: ${extraDistance.toFixed(2)}`);
+      }
+    }
+
+    // Appliquer différents modes de caméra avec la bonne position cible
     switch(this.mode) {
       case 'immediate':
         // Position immédiate sans interpolation

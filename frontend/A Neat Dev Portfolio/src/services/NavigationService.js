@@ -1,4 +1,5 @@
 import * as CANNON from 'cannon-es';
+import { UniverseConfig } from '../config/universe.config.js';
 
 export class NavigationService {
   constructor(spaceship) {
@@ -82,8 +83,8 @@ export class NavigationService {
 
   update(delta) {
     // Forces de base
-    const baseForce = 150;
-    const boostMultiplier = this.keys.boost ? 6 : 1;
+    const baseForce = UniverseConfig.spaceship.baseForce || 90;
+    const boostMultiplier = this.keys.boost ? UniverseConfig.spaceship.boostForce : 1;
     const force = new CANNON.Vec3();
 
     // 1. Découplage complet des rotations

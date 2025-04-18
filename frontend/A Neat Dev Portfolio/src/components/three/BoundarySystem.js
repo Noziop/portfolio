@@ -9,9 +9,9 @@ export class BoundarySystem {
     this.warningActive = false;
 
     // Configuration
-    this.universeSize = 1500; // Récupérer de la config globale
-    this.warningDistance = 1300;
-    this.resetDistance = 1500;
+    this.universeSize = UniverseConfig.universeSize; // Récupérer de la config globale
+    this.warningDistance = UniverseConfig.boundaries.warning; // Récupérer de la config globale
+    this.resetDistance = UniverseConfig.boundaries.reset; // Récupérer de la config globale
 
     // Seuil de visibilité - à quelle distance les murs commencent à apparaître
     this.visibilityThreshold = 0.7; // Commence à 70% de la distance d'avertissement
